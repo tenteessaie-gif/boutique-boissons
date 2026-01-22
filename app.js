@@ -13,16 +13,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const articlesInitiaux = [
-    { nom: "Rush Energy (Canette)", prixDet: 500, prixGros: 11000, cat: "energy", stock: true, img: "⚡" },
-    { nom: "Biggo Orange", prixDet: 600, prixGros: 6500, cat: "energy", stock: true, img: "🥤" },
-    { nom: "Biggo Cola", prixDet: 600, prixGros: 6500, cat: "energy", stock: true, img: "🥤" },
-    { nom: "Malta Guinness", prixDet: 800, prixGros: 18500, cat: "soda", stock: true, img: "🍺" },
-    { nom: "Youki Cocktail", prixDet: 600, prixGros: 6500, cat: "soda", stock: true, img: "🍹" },
-    { nom: "Sprite Canette", prixDet: 700, prixGros: 16000, cat: "soda", stock: true, img: "🍋" },
-    { nom: "Casavino Petit", prixDet: 1500, prixGros: 16500, cat: "wine", stock: true, img: "🍷" }
-];
-
 let produits = [];
 let panier = [];
 let user = JSON.parse(localStorage.getItem('user')) || null;
@@ -30,10 +20,6 @@ let isAdminMode = false;
 
 // INITIALISATION
 const initBoutique = async () => {
-    const querySnapshot = await getDocs(collection(db, "produits"));
-    if (querySnapshot.empty) {
-        for(let art of articlesInitiaux) { await addDoc(collection(db, "produits"), art); }
-    }
     onSnapshot(collection(db, "produits"), (snap) => {
         produits = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         window.afficherProduits(produits);
@@ -50,9 +36,9 @@ window.afficherProduits = (liste) => {
             <h3>${p.nom}</h3>
             ${isAdminMode ? `
                 <div style="background:#f0f0f0; padding:5px; border-radius:8px; margin-top:5px;">
-                    <input type="number" value="${p.prixDet}" onchange="window.updProd('${p.id}','prixDet',this.value)" style="width:60px; font-size:0.7rem">
-                    <input type="number" value="${p.prixGros}" onchange="window.updProd('${p.id}','prixGros',this.value)" style="width:60px; font-size:0.7rem">
-                    <button onclick="window.updProd('${p.id}','stock', ${!p.stock})" style="display:block; width:100%; margin-top:5px; font-size:0.7rem;">
+                    <input type="number" value="${p.prixDet}" onchange="window.updProd('${p.id}','prixDet',this.value)" style="width:55px; font-size:0.7rem">
+                    <input type="number" value="${p.prixGros}" onchange="window.updProd('${p.id}','prixGros',this.value)" style="width:55px; font-size:0.7rem">
+                    <button onclick="window.updProd('${p.id}','stock', ${!p.stock})" style="display:block; width:100%; margin-top:5px; font-size:0.6rem;">
                         ${p.stock ? 'En Stock' : 'Épuisé'}
                     </button>
                 </div>
@@ -69,11 +55,12 @@ window.afficherProduits = (liste) => {
     `).join('');
 };
 
-// GESTION PANIER (MULTIPLICATION)
+// --- PANIER : MULTIPLICATION ET SÉPARATION D/G ---
 window.ajouterPanier = (id) => {
     const p = produits.find(prod => prod.id === id);
     const type = document.querySelector(`input[name="t-${id}"]:checked`).value;
     const nomUnique = p.nom + (type === 'det' ? ' (D)' : ' (G)');
+    
     const existant = panier.find(item => item.nom === nomUnique);
     if (existant) { existant.qty += 1; } 
     else { panier.push({ nom: nomUnique, prix: (type === 'det' ? p.prixDet : p.prixGros), qty: 1 }); }
@@ -100,11 +87,10 @@ window.majPanierUI = () => {
     `).join('');
 };
 
-// COMMANDE & WHATSAPP
+// --- NOTIFICATION WHATSAPP ---
 window.goToCheckout = async () => {
     if(!user || !localStorage.getItem('isL')) {
-        alert("Action requise : Connectez-vous !");
-        return window.toggleAuthModal();
+        alert("Connectez-vous d'abord !"); return window.toggleAuthModal();
     }
     if(panier.length === 0) return alert("Panier vide");
 
@@ -116,7 +102,7 @@ window.goToCheckout = async () => {
         articles: panier, total: total, statut: "En attente", date: new Date() 
     });
 
-    const numAdmin = "22892239333"; // REMPLACE PAR TON NUMÉRO (ex: 22890909090)
+    const numAdmin = "22892239333"; // <--- METS TON NUMÉRO ICI
     const msg = encodeURIComponent(`📦 *NOUVELLE COMMANDE*\n\n*Client:* ${user.name}\n*Tél:* ${user.phone}\n\n*Articles:*\n${listeTexte}\n\n*TOTAL : ${total} F*`);
     window.open(`https://wa.me/${numAdmin}?text=${msg}`, '_blank');
 
@@ -124,16 +110,7 @@ window.goToCheckout = async () => {
     panier = []; window.majPanierUI(); window.toggleCart();
 };
 
-// ADMIN SECTIONS
-window.adminAccess = () => {
-    const pnl = document.getElementById('admin-panel');
-    if(pnl.style.display === 'none') {
-        if(prompt("Code Admin :") === "0000") {
-            pnl.style.display = 'block'; window.showAdminSection('orders');
-        }
-    } else { pnl.style.display = 'none'; isAdminMode = false; window.afficherProduits(produits); }
-};
-
+// --- ADMIN : TIRÉS ET HISTORIQUE ---
 window.showAdminSection = (s) => {
     const content = document.getElementById('admin-content');
     isAdminMode = (s === 'products');
@@ -164,7 +141,7 @@ window.showAdminSection = (s) => {
 window.marquerLivrer = async (id) => { await updateDoc(doc(db, "commandes", id), { statut: "Livré" }); };
 window.updProd = async (id, f, v) => { await updateDoc(doc(db, "produits", id), { [f]: (f==='stock'? v : parseInt(v)) }); };
 
-// UTILS & AUTH
+// NAVIGATION ET AUTH (Garder intact)
 window.toggleCart = () => document.getElementById('cart-sidebar').classList.toggle('active');
 window.toggleAuthModal = () => { document.getElementById('auth-modal').style.display = (document.getElementById('auth-modal').style.display==='block'?'none':'block'); };
 window.switchAuth = (v) => { document.getElementById('login-view').style.display=(v==='login'?'block':'none'); document.getElementById('register-view').style.display=(v==='register'?'block':'none'); };
@@ -173,7 +150,6 @@ window.handleRegister = () => {
     const phone = document.getElementById('reg-prefix').value + document.getElementById('reg-phone').value;
     const addr = document.getElementById('reg-address').value;
     const pass = document.getElementById('reg-pass').value;
-    if(!name || !phone || !pass) return alert("Champs vides !");
     user = { name, phone, address: addr, pass };
     localStorage.setItem('user', JSON.stringify(user)); window.switchAuth('login');
 };
@@ -181,10 +157,15 @@ window.handleLogin = () => {
     const n = document.getElementById('login-name').value;
     const p = document.getElementById('login-pass').value;
     if(user && n === user.name && p === user.pass) { localStorage.setItem('isL', '1'); location.reload(); }
-    else { alert("Erreur !"); }
+    else { alert("Erreur"); }
 };
 window.filter = (c) => window.afficherProduits(c === 'all' ? produits : produits.filter(p => p.cat === c));
-
+window.adminAccess = () => {
+    const pnl = document.getElementById('admin-panel');
+    if(pnl.style.display === 'none') {
+        if(prompt("Code Admin :") === "0000") { pnl.style.display = 'block'; window.showAdminSection('orders'); }
+    } else { pnl.style.display = 'none'; isAdminMode = false; window.afficherProduits(produits); }
+};
 window.onload = () => {
     if(user && localStorage.getItem('isL')) {
         document.getElementById('btn-login-open').style.display='none';
@@ -192,8 +173,3 @@ window.onload = () => {
         document.getElementById('user-display-name').innerText = user.name;
     }
 };
-
-// PWA Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch((err) => console.log("SW Error:", err));
-}
