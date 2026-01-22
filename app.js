@@ -35,10 +35,10 @@ window.afficherProduits = (liste) => {
             <span class="product-img">${p.img}</span>
             <h3>${p.nom}</h3>
             ${isAdminMode ? `
-                <div style="background:#f0f0f0; padding:5px; border-radius:8px; margin-top:5px;">
-                    <input type="number" value="${p.prixDet}" onchange="window.updProd('${p.id}','prixDet',this.value)" style="width:55px; font-size:0.7rem">
-                    <input type="number" value="${p.prixGros}" onchange="window.updProd('${p.id}','prixGros',this.value)" style="width:55px; font-size:0.7rem">
-                    <button onclick="window.updProd('${p.id}','stock', ${!p.stock})" style="display:block; width:100%; margin-top:5px; font-size:0.6rem;">
+                <div style="background:#f0f0f0; padding:8px; border-radius:10px; margin-top:5px;">
+                    <input type="number" value="${p.prixDet}" onchange="window.updProd('${p.id}','prixDet',this.value)" style="width:60px; font-size:0.75rem">
+                    <input type="number" value="${p.prixGros}" onchange="window.updProd('${p.id}','prixGros',this.value)" style="width:60px; font-size:0.75rem">
+                    <button onclick="window.updProd('${p.id}','stock', ${!p.stock})" style="display:block; width:100%; margin-top:5px; font-size:0.7rem;">
                         ${p.stock ? 'En Stock' : 'Épuisé'}
                     </button>
                 </div>
@@ -55,22 +55,18 @@ window.afficherProduits = (liste) => {
     `).join('');
 };
 
-// --- PANIER : MULTIPLICATION ET SÉPARATION D/G ---
+// PANIER
 window.ajouterPanier = (id) => {
     const p = produits.find(prod => prod.id === id);
     const type = document.querySelector(`input[name="t-${id}"]:checked`).value;
     const nomUnique = p.nom + (type === 'det' ? ' (D)' : ' (G)');
-    
     const existant = panier.find(item => item.nom === nomUnique);
     if (existant) { existant.qty += 1; } 
     else { panier.push({ nom: nomUnique, prix: (type === 'det' ? p.prixDet : p.prixGros), qty: 1 }); }
     window.majPanierUI();
 };
 
-window.supprimerDuPanier = (index) => {
-    panier.splice(index, 1);
-    window.majPanierUI();
-};
+window.supprimerDuPanier = (index) => { panier.splice(index, 1); window.majPanierUI(); };
 
 window.majPanierUI = () => {
     document.getElementById('cart-count').innerText = panier.reduce((a, b) => a + b.qty, 0);
@@ -87,43 +83,34 @@ window.majPanierUI = () => {
     `).join('');
 };
 
-// --- NOTIFICATION WHATSAPP ---
+// WHATSAPP AVEC ADRESSE
 window.goToCheckout = async () => {
-    if(!user || !localStorage.getItem('isL')) {
-        alert("Connectez-vous d'abord !"); return window.toggleAuthModal();
-    }
+    if(!user || !localStorage.getItem('isL')) { alert("Connectez-vous !"); return window.toggleAuthModal(); }
     if(panier.length === 0) return alert("Panier vide");
-
     const total = document.getElementById('cart-total').innerText;
     const listeTexte = panier.map(i => `- ${i.qty}x ${i.nom}`).join('\n');
-
     await addDoc(collection(db, "commandes"), { 
-        client: user.name, tel: user.phone, adresse: user.address, 
-        articles: panier, total: total, statut: "En attente", date: new Date() 
+        client: user.name, tel: user.phone, adresse: user.address, articles: panier, total: total, statut: "En attente", date: new Date() 
     });
-
-    const numAdmin = "22892239333"; // <--- METS TON NUMÉRO ICI
-    const msg = encodeURIComponent(`📦 *NOUVELLE COMMANDE*\n\n*Client:* ${user.name}\n*Tél:* ${user.phone}\n\n*Articles:*\n${listeTexte}\n\n*TOTAL : ${total} F*`);
+    const numAdmin = "228XXXXXXXX"; // TON NUMÉRO ICI
+    const msg = encodeURIComponent(`📦 *NOUVELLE COMMANDE*\n\n*Client:* ${user.name}\n*Tél:* ${user.phone}\n*Lieu:* ${user.address}\n\n*Articles:*\n${listeTexte}\n\n*TOTAL : ${total} F*`);
     window.open(`https://wa.me/${numAdmin}?text=${msg}`, '_blank');
-
-    alert("Commande envoyée !");
     panier = []; window.majPanierUI(); window.toggleCart();
 };
 
-// --- ADMIN : TIRÉS ET HISTORIQUE ---
+// ADMIN
 window.showAdminSection = (s) => {
     const content = document.getElementById('admin-content');
-    isAdminMode = (s === 'products');
-    window.afficherProduits(produits);
-    
-    if(s === 'orders' || s === 'history') {
+    const grid = document.getElementById('product-grid');
+    if (s === 'orders' || s === 'history') {
+        grid.style.display = 'none'; isAdminMode = false;
         const stat = (s === 'orders') ? "En attente" : "Livré";
         const q = query(collection(db, "commandes"), where("statut", "==", stat), orderBy("date", "desc"));
         onSnapshot(q, (snap) => {
-            content.innerHTML = `<h3>${s === 'orders' ? '📦 Commandes' : '📜 Historique'}</h3>` + snap.docs.map(d => {
+            content.innerHTML = `<h3>${s === 'orders' ? '📦 Commandes' : '📜 Historique'}</h3>` + 
+            (snap.empty ? `<p>Vide</p>` : snap.docs.map(d => {
                 const c = d.data();
-                return `
-                <div class="order-card">
+                return `<div class="order-card">
                     <div class="order-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
                         <span>👤 ${c.client}</span> <b>${c.total} F 🔽</b>
                     </div>
@@ -133,39 +120,57 @@ window.showAdminSection = (s) => {
                         ${s === 'orders' ? `<button class="btn-delivered" onclick="window.marquerLivrer('${d.id}')">Livré ✅</button>` : ''}
                     </div>
                 </div>`;
-            }).join('');
+            }).join(''));
         });
-    } else { content.innerHTML = `<p>Modifiez les fiches en bas.</p>`; }
+    } else { grid.style.display = 'grid'; isAdminMode = true; content.innerHTML = `<p>Modification prix/stock en bas.</p>`; window.afficherProduits(produits); }
 };
 
 window.marquerLivrer = async (id) => { await updateDoc(doc(db, "commandes", id), { statut: "Livré" }); };
 window.updProd = async (id, f, v) => { await updateDoc(doc(db, "produits", id), { [f]: (f==='stock'? v : parseInt(v)) }); };
 
-// NAVIGATION ET AUTH (Garder intact)
+// NAVIGATION & AUTH (MODIFIÉ POUR INSCRIPTION SÉCURISÉE)
 window.toggleCart = () => document.getElementById('cart-sidebar').classList.toggle('active');
 window.toggleAuthModal = () => { document.getElementById('auth-modal').style.display = (document.getElementById('auth-modal').style.display==='block'?'none':'block'); };
 window.switchAuth = (v) => { document.getElementById('login-view').style.display=(v==='login'?'block':'none'); document.getElementById('register-view').style.display=(v==='register'?'block':'none'); };
+
 window.handleRegister = () => {
-    const name = document.getElementById('reg-name').value;
-    const phone = document.getElementById('reg-prefix').value + document.getElementById('reg-phone').value;
-    const addr = document.getElementById('reg-address').value;
+    const name = document.getElementById('reg-name').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const prefix = document.getElementById('reg-prefix').value;
+    const addr = document.getElementById('reg-address').value.trim();
     const pass = document.getElementById('reg-pass').value;
-    user = { name, phone, address: addr, pass };
-    localStorage.setItem('user', JSON.stringify(user)); window.switchAuth('login');
+    const passConf = document.getElementById('reg-pass-confirm').value;
+
+    if(!name || !phone || !addr || !pass || !passConf) return alert("ERREUR : Tous les champs sont obligatoires !");
+    if(pass !== passConf) return alert("ERREUR : Les mots de passe ne correspondent pas !");
+    if(phone.length < 8) return alert("ERREUR : Numéro de téléphone invalide !");
+
+    user = { name, phone: prefix + phone, address: addr, pass };
+    localStorage.setItem('user', JSON.stringify(user)); 
+    alert("Compte créé avec succès ! Connectez-vous.");
+    window.switchAuth('login');
 };
+
 window.handleLogin = () => {
     const n = document.getElementById('login-name').value;
     const p = document.getElementById('login-pass').value;
     if(user && n === user.name && p === user.pass) { localStorage.setItem('isL', '1'); location.reload(); }
-    else { alert("Erreur"); }
+    else { alert("Identifiants incorrects !"); }
 };
-window.filter = (c) => window.afficherProduits(c === 'all' ? produits : produits.filter(p => p.cat === c));
+
+window.filter = (c) => {
+    document.querySelectorAll('.categories button').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    window.afficherProduits(c === 'all' ? produits : produits.filter(p => p.cat === c));
+};
+
 window.adminAccess = () => {
-    const pnl = document.getElementById('admin-panel');
-    if(pnl.style.display === 'none') {
-        if(prompt("Code Admin :") === "0000") { pnl.style.display = 'block'; window.showAdminSection('orders'); }
-    } else { pnl.style.display = 'none'; isAdminMode = false; window.afficherProduits(produits); }
+    if(prompt("Code Admin :") === "0000") { 
+        document.getElementById('admin-panel').style.display = 'block'; 
+        window.showAdminSection('orders'); 
+    }
 };
+
 window.onload = () => {
     if(user && localStorage.getItem('isL')) {
         document.getElementById('btn-login-open').style.display='none';
