@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DrinkExpress - Grossiste & Détail</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -36,7 +35,7 @@
         <button onclick="window.filter('energy')">Énergisants</button>
         <button onclick="window.filter('soda')">Sucreries</button>
         <button onclick="window.filter('wine')">Vins & Spiritueux</button>
-        <button class="btn-admin-nav" onclick="window.adminAccess()">⚙️</button>
+        <button onclick="window.adminAccess()" style="background:none; border:none; cursor:pointer; font-size:1.2rem;">⚙️</button>
     </nav>
 
     <main id="product-grid"></main>
@@ -49,7 +48,7 @@
         <div id="cart-items"></div>
         <div class="cart-footer">
             <div class="total-box">
-                <span>Total à payer :</span>
+                <span>Total :</span>
                 <span id="cart-total">0</span><span> FCFA</span>
             </div>
             <button class="checkout-btn" onclick="window.goToCheckout()">Confirmer la commande</button>
@@ -62,18 +61,17 @@
             
             <div id="login-view">
                 <h2>Bon retour !</h2>
-                <p>Connectez-vous pour commander</p>
                 <input type="text" id="login-name" placeholder="Nom de la boutique">
-                <input type="password" id="login-pass" placeholder="Mot de passe (4 chiffres)">
+                <input type="password" id="login-pass" placeholder="Code secret">
                 <button class="btn-primary" onclick="window.handleLogin()">Se connecter</button>
                 <p class="switch-auth" onclick="window.switchAuth('register')">Nouveau ? <span>Créer un compte</span></p>
             </div>
 
             <div id="register-view" style="display:none;">
-                <h2>Créer un compte</h2>
-                <input type="text" id="reg-name" placeholder="Nom ou Boutique">
-                <div class="phone-input">
-                    <select id="reg-prefix">
+                <h2>Inscription</h2>
+                <input type="text" id="reg-name" placeholder="Nom du commerce">
+                <div class="phone-input" style="display:flex; gap:5px;">
+                    <select id="reg-prefix" style="width:100px;">
                         <option value="+228">🇹🇬 +228</option>
                         <option value="+229">🇧🇯 +229</option>
                         <option value="+226">🇧🇫 +226</option>
@@ -81,11 +79,10 @@
                     </select>
                     <input type="tel" id="reg-phone" placeholder="Numéro">
                 </div>
-                <input type="text" id="reg-address" placeholder="Adresse de livraison">
-                <input type="password" id="reg-pass" placeholder="Mot de passe (4 chiffres)">
-                <input type="password" id="reg-pass2" placeholder="Confirmer mot de passe">
-                <button class="btn-primary" onclick="window.handleRegister()">S'inscrire</button>
-                <p class="switch-auth" onclick="window.switchAuth('login')">Déjà inscrit ? <span>Connexion</span></p>
+                <input type="text" id="reg-address" placeholder="Quartier / Ville">
+                <input type="password" id="reg-pass" placeholder="Code (4 chiffres)">
+                <button class="btn-primary" onclick="window.handleRegister()">Valider l'inscription</button>
+                <p class="switch-auth" onclick="window.switchAuth('login')">Retour à la connexion</p>
             </div>
         </div>
     </div>
