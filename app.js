@@ -18,86 +18,106 @@ let panier = [];
 let user = JSON.parse(localStorage.getItem('user')) || null;
 let isAdmin = false;
 
-// AFFICHAGE DES ARTICLES AVEC OPTIONS ADMIN
+// ECOUTE TEMPS RÉEL DES PRODUITS
+onSnapshot(collection(db, "produits"), (snapshot) => {
+    produits = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    window.afficherProduits(produits);
+});
+
 window.afficherProduits = (liste) => {
     const grid = document.getElementById('product-grid');
     if(!grid) return;
     grid.innerHTML = liste.map(p => `
         <div class="product-card ${!p.stock ? 'oos' : ''}">
-            <span style="font-size:40px">${p.img || '🥤'}</span>
+            <span class="product-img">${p.img}</span>
             <h3>${p.nom}</h3>
             ${isAdmin ? `
-                <div class="admin-edit">
-                    <input type="number" value="${p.prixDet}" onchange="window.upd('${p.id}','prixDet',this.value)" title="Prix Détail">
-                    <input type="number" value="${p.prixGros}" onchange="window.upd('${p.id}','prixGros',this.value)" title="Prix Gros">
-                    <button onclick="window.upd('${p.id}','stock', ${!p.stock})">${p.stock ? '✅ En Stock' : '❌ Épuisé'}</button>
-                    <button onclick="window.suppr('${p.id}')" style="background:#ff4444; color:white;">🗑️</button>
+                <div style="margin-bottom:10px">
+                    <input type="number" value="${p.prixDet}" onchange="window.upd('${p.id}','prixDet',this.value)" style="width:60px">
+                    <input type="number" value="${p.prixGros}" onchange="window.upd('${p.id}','prixGros',this.value)" style="width:60px">
+                    <button onclick="window.upd('${p.id}','stock',${!p.stock})">${p.stock?'✅':'❌'}</button>
+                    <button onclick="window.suppr('${p.id}')">🗑️</button>
                 </div>
             ` : `
                 <div class="pricing-zone">
-                    <p>Détail: <b>${p.prixDet} F</b></p>
-                    <p>Gros: <b>${p.prixGros} F</b></p>
+                    <label class="price-row">
+                        <span><input type="radio" name="t-${p.id}" value="det" checked> Détail</span>
+                        <span class="price-val">${p.prixDet} F</span>
+                    </label>
+                    <label class="price-row">
+                        <span><input type="radio" name="t-${p.id}" value="gros"> Gros</span>
+                        <span class="price-val">${p.prixGros} F</span>
+                    </label>
+                    <div class="qty-control">
+                        <span>Qté:</span>
+                        <input type="number" id="qty-${p.id}" value="1" min="1">
+                    </div>
                 </div>
-                <button class="btn-primary ${!p.stock ? 'btn-oos' : ''}" onclick="${p.stock ? `window.ajouterPanier('${p.id}')` : ''}">
-                    ${p.stock ? '🛒 Ajouter' : 'ÉPUISÉ'}
+                <button class="add-btn" ${!p.stock ? 'disabled' : ''} onclick="window.ajouter('${p.id}')">
+                    ${p.stock ? '🛒 Ajouter' : 'Épuisé'}
                 </button>
             `}
         </div>
     `).join('');
 };
 
-// ACTIONS ADMIN
-window.upd = async (id, field, val) => {
-    const v = (field === 'stock') ? val : parseInt(val);
-    await updateDoc(doc(db, "produits", id), { [field]: v });
+window.ajouter = (id) => {
+    const p = produits.find(prod => prod.id === id);
+    const type = document.querySelector(`input[name="t-${id}"]:checked`).value;
+    const qty = parseInt(document.getElementById(`qty-${id}`).value) || 1;
+    const prix = type === 'det' ? p.prixDet : p.prixGros;
+    panier.push({ nom: p.nom + (type==='det'?' (D)':' (G)'), prix, qty });
+    window.majUI();
 };
-window.suppr = async (id) => { if(confirm("Supprimer l'article ?")) await deleteDoc(doc(db, "produits", id)); };
+
+window.majUI = () => {
+    document.getElementById('cart-count').innerText = panier.reduce((a,b)=>a+b.qty,0);
+    document.getElementById('cart-total').innerText = panier.reduce((a,b)=>a+(b.prix*b.qty),0);
+    document.getElementById('cart-items').innerHTML = panier.map(i=>`<div class="cart-item"><span>${i.nom} x${i.qty}</span><b>${i.prix*i.qty}F</b></div>`).join('');
+};
+
+window.goToCheckout = async () => {
+    if(!user) return window.toggleAuthModal();
+    if(panier.length === 0) return alert("Panier vide");
+    await addDoc(collection(db, "commandes"), { client: user.name, tel: user.phone, total: document.getElementById('cart-total').innerText, articles: panier, statut: "En attente" });
+    alert("Commande envoyée !"); panier=[]; window.majUI(); window.toggleCart();
+};
 
 window.adminAccess = () => {
-    if(prompt("Code Admin :") === "0000") {
+    if(prompt("Code :") === "0000") {
         isAdmin = !isAdmin;
         document.getElementById('admin-orders-zone').style.display = isAdmin ? 'block' : 'none';
         window.afficherProduits(produits);
-        if(isAdmin) window.chargerCommandes();
+        if(isAdmin) {
+            onSnapshot(query(collection(db, "commandes"), where("statut", "==", "En attente")), (snap) => {
+                document.getElementById('admin-orders-zone').innerHTML = `<h3>📦 Commandes</h3>` + 
+                snap.docs.map(d => { const c=d.data(); return `<div class="order-card">${c.client} - ${c.total}F <button onclick="window.updC('${d.id}')">Prêt ✅</button></div>`}).join('');
+            });
+        }
     }
 };
 
-// SYNC PRODUITS
-onSnapshot(collection(db, "produits"), (snap) => {
-    produits = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    window.afficherProduits(produits);
-});
+window.upd = async (id,f,v) => await updateDoc(doc(db,"produits",id),{[f]:(f==='stock'?v:parseInt(v))});
+window.suppr = async (id) => { if(confirm("Supprimer ?")) await deleteDoc(doc(db,"produits",id)); };
+window.updC = async (id) => await updateDoc(doc(db,"commandes",id),{statut:"Livré"});
 
-// FONCTIONS NAVIGATION & AUTH (Rétablies)
-window.toggleAuthModal = () => {
-    const m = document.getElementById('auth-modal');
-    m.style.display = (m.style.display === 'block') ? 'none' : 'block';
-};
-window.switchAuth = (v) => {
-    document.getElementById('login-view').style.display = v === 'login' ? 'block' : 'none';
-    document.getElementById('register-view').style.display = v === 'register' ? 'block' : 'none';
-};
+window.toggleCart = () => document.getElementById('cart-sidebar').classList.toggle('active');
+window.toggleAuthModal = () => { const m=document.getElementById('auth-modal'); m.style.display=(m.style.display==='block'?'none':'block'); };
+window.switchAuth = (v) => { document.getElementById('login-view').style.display=v==='login'?'block':'none'; document.getElementById('register-view').style.display=v==='register'?'block':'none'; };
+
 window.handleRegister = () => {
-    user = { 
-        name: document.getElementById('reg-name').value, 
-        phone: document.getElementById('reg-phone').value, 
-        address: document.getElementById('reg-address').value, 
-        pass: document.getElementById('reg-pass').value 
-    };
+    user = { name: document.getElementById('reg-name').value, phone: document.getElementById('reg-prefix').value + document.getElementById('reg-phone').value, address: document.getElementById('reg-address').value, pass: document.getElementById('reg-pass').value };
     localStorage.setItem('user', JSON.stringify(user));
-    alert("Compte créé !"); window.switchAuth('login');
+    window.switchAuth('login');
 };
+
 window.handleLogin = () => {
     const n = document.getElementById('login-name').value;
     const p = document.getElementById('login-pass').value;
-    if(user && user.name === n && user.pass === p) {
-        localStorage.setItem('isL', '1');
-        location.reload();
-    } else { alert("Erreur"); }
+    if(user && n === user.name && p === user.pass) { localStorage.setItem('isL', '1'); location.reload(); }
 };
 
-window.filter = (c) => window.afficherProduits(c === 'all' ? produits : produits.filter(p => p.cat === c));
-window.toggleCart = () => document.getElementById('cart-sidebar').classList.toggle('active');
+window.filter = (c) => window.afficherProduits(c==='all'?produits:produits.filter(p=>p.cat===c));
 
 window.onload = () => {
     if(user && localStorage.getItem('isL')) {
