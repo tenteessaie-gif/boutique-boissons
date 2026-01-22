@@ -1,33 +1,44 @@
-:root { --primary: #2ecc71; --dark: #2c3e50; --bg: #f8fbf9; --danger: #e74c3c; }
+:root { --primary: #2ecc71; --dark: #2c3e50; --bg: #f8fbf9; --white: #ffffff; --danger: #e74c3c; }
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-body { background-color: var(--bg); color: var(--dark); padding-bottom: 20px; }
+body { background-color: var(--bg); color: var(--dark); line-height: 1.4; }
 
-header { background: white; padding: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-.top-bar { display: flex; justify-content: space-between; align-items: center; }
-.logo span { color: var(--primary); font-weight: bold; }
+header { background: var(--white); padding: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 15px rgba(0,0,0,0.05); }
+.top-bar { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
+.logo { font-weight: 600; font-size: 1.2rem; }
+.logo span { color: var(--primary); }
 
-.categories { display: flex; overflow-x: auto; padding: 15px; gap: 10px; }
-.categories button { background: white; border: 1px solid #ddd; padding: 8px 18px; border-radius: 20px; white-space: nowrap; }
+.user-badge { background: var(--bg); padding: 5px 12px; border-radius: 20px; border: 1px solid var(--primary); color: var(--primary); font-size: 0.8rem; }
+#btn-login-open { background: var(--primary); color: white; border: none; padding: 6px 15px; border-radius: 20px; font-weight: 500; cursor: pointer; }
+
+.categories { display: flex; overflow-x: auto; padding: 15px; gap: 10px; scrollbar-width: none; }
+.categories button { background: white; border: 1px solid #eee; padding: 8px 18px; border-radius: 25px; white-space: nowrap; font-size: 0.8rem; }
 .categories button.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-#product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; padding: 12px; }
-.product-card { background: white; border-radius: 15px; padding: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+#product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 12px; padding: 12px; }
+.product-card { background: white; border-radius: 15px; padding: 12px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 2px solid transparent; }
 
-/* --- ÉTAT ÉPUISÉ EN ROUGE --- */
-.product-card.oos { border: 2px solid var(--danger); opacity: 0.8; }
-.btn-oos { background: var(--danger) !important; cursor: not-allowed; }
+/* ROUGE SI ÉPUISÉ */
+.product-card.oos { border-color: var(--danger); opacity: 0.8; }
+.add-btn:disabled { background: var(--danger); cursor: not-allowed; }
 
-.pricing-zone { background: #f9f9f9; padding: 10px; border-radius: 10px; margin: 10px 0; font-size: 0.8rem; }
-.price-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.product-img { font-size: 45px; margin-bottom: 10px; display: block; text-align: center; }
+.pricing-zone { background: #f9f9f9; border-radius: 10px; padding: 8px; margin-bottom: 10px; font-size: 0.75rem; text-align: left; }
+.price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; cursor: pointer; }
+.price-val { font-weight: 600; color: var(--primary); }
 
-/* Footer & Admin */
-.shop-footer { background: var(--dark); color: white; padding: 25px; text-align: center; margin-top: 30px; font-size: 0.85rem; }
+.qty-control { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 5px; border-top: 1px solid #eee; padding-top: 5px; }
+.qty-control input { width: 50px; text-align: center; border: 1px solid #ddd; border-radius: 5px; }
+
+.add-btn { background: var(--primary); color: white; border: none; width: 100%; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+
+/* ADMIN */
 #admin-orders-zone { background: #fff3cd; padding: 15px; border-bottom: 2px solid #ffeeba; }
-.order-card { background: white; padding: 10px; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid var(--primary); text-align: left; }
+.order-card { background: white; padding: 10px; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid var(--primary); }
 
-.sidebar { position: fixed; right: -100%; top: 0; width: 100%; max-width: 350px; height: 100%; background: white; z-index: 1000; transition: 0.4s; padding: 20px; }
+.sidebar { position: fixed; right: -100%; top: 0; width: 100%; max-width: 350px; height: 100%; background: white; z-index: 1000; transition: 0.4s; padding: 25px; display: flex; flex-direction: column; }
 .sidebar.active { right: 0; }
-.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
-.modal-content { background: white; margin: 15% auto; padding: 25px; border-radius: 15px; width: 90%; max-width: 380px; }
-.btn-primary { background: var(--primary); color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
+.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); }
+.modal-content { background: white; margin: 10% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; }
+.modal-content input, .modal-content select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #eee; border-radius: 10px; }
+.phone-input { display: flex; gap: 8px; }
+.btn-primary { background: var(--primary); color: white; border: none; width: 100%; padding: 14px; border-radius: 10px; font-weight: 600; cursor: pointer; }
