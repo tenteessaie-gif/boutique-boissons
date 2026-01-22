@@ -18,12 +18,7 @@ let panier = [];
 let user = JSON.parse(localStorage.getItem('user')) || null;
 let isAdmin = false;
 
-// ECOUTE TEMPS RÉEL
-onSnapshot(collection(db, "produits"), (snapshot) => {
-    produits = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    window.afficherProduits(produits);
-});
-
+// AFFICHAGE DES ARTICLES AVEC OPTIONS ADMIN
 window.afficherProduits = (liste) => {
     const grid = document.getElementById('product-grid');
     if(!grid) return;
@@ -32,81 +27,65 @@ window.afficherProduits = (liste) => {
             <span style="font-size:40px">${p.img || '🥤'}</span>
             <h3>${p.nom}</h3>
             ${isAdmin ? `
-                <div style="margin:10px 0">
-                    <input type="number" value="${p.prixDet}" onchange="window.maj('${p.id}','prixDet',this.value)">
-                    <input type="number" value="${p.prixGros}" onchange="window.maj('${p.id}','prixGros',this.value)">
-                    <button onclick="window.maj('${p.id}','stock', ${!p.stock})">${p.stock ? '✅ En Stock' : '❌ Épuisé'}</button>
+                <div class="admin-edit">
+                    <input type="number" value="${p.prixDet}" onchange="window.upd('${p.id}','prixDet',this.value)" title="Prix Détail">
+                    <input type="number" value="${p.prixGros}" onchange="window.upd('${p.id}','prixGros',this.value)" title="Prix Gros">
+                    <button onclick="window.upd('${p.id}','stock', ${!p.stock})">${p.stock ? '✅ En Stock' : '❌ Épuisé'}</button>
+                    <button onclick="window.suppr('${p.id}')" style="background:#ff4444; color:white;">🗑️</button>
                 </div>
             ` : `
                 <div class="pricing-zone">
-                    <label class="price-row"><span><input type="radio" name="p-${p.id}" value="det" checked> Détail</span> <b>${p.prixDet} F</b></label>
-                    <label class="price-row"><span><input type="radio" name="p-${p.id}" value="gros"> Gros</span> <b>${p.prixGros} F</b></label>
-                    <input type="number" id="qty-${p.id}" value="1" min="1" style="width:45px">
+                    <p>Détail: <b>${p.prixDet} F</b></p>
+                    <p>Gros: <b>${p.prixGros} F</b></p>
                 </div>
+                <button class="btn-primary ${!p.stock ? 'btn-oos' : ''}" onclick="${p.stock ? `window.ajouterPanier('${p.id}')` : ''}">
+                    ${p.stock ? '🛒 Ajouter' : 'ÉPUISÉ'}
+                </button>
             `}
-            <button class="${isAdmin ? 'btn-primary' : (p.stock ? 'btn-primary' : 'btn-primary btn-oos')}" 
-                onclick="${isAdmin ? `window.suppr('${p.id}')` : (p.stock ? `window.ajouterPanier('${p.id}')` : '')}">
-                ${isAdmin ? '🗑️ Supprimer' : (p.stock ? '🛒 Ajouter' : 'ÉPUISÉ')}
-            </button>
         </div>
     `).join('');
 };
 
-window.ajouterPanier = (id) => {
-    const p = produits.find(i => i.id === id);
-    const type = document.querySelector(`input[name="p-${id}"]:checked`).value;
-    const qty = parseInt(document.getElementById(`qty-${id}`).value) || 1;
-    const prix = type === 'det' ? p.prixDet : p.prixGros;
-    panier.push({ nom: p.nom + (type==='det'?' (D)':' (G)'), prix, qty });
-    window.majPanierUI();
+// ACTIONS ADMIN
+window.upd = async (id, field, val) => {
+    const v = (field === 'stock') ? val : parseInt(val);
+    await updateDoc(doc(db, "produits", id), { [field]: v });
 };
-
-window.majPanierUI = () => {
-    document.getElementById('cart-count').innerText = panier.length;
-    document.getElementById('cart-total').innerText = panier.reduce((a,b)=>a+(b.prix*b.qty),0);
-    document.getElementById('cart-items').innerHTML = panier.map(i => `<div style="display:flex; justify-content:space-between; padding:5px"><span>${i.nom} x${i.qty}</span><b>${i.prix*i.qty}F</b></div>`).join('');
-};
-
-window.goToCheckout = async () => {
-    if(!user) return window.toggleAuthModal();
-    if(panier.length === 0) return alert("Panier vide");
-    await addDoc(collection(db, "commandes"), { client: user.name, tel: user.phone, adresse: user.address, articles: panier, total: document.getElementById('cart-total').innerText, statut: "En attente" });
-    alert("Commande envoyée !");
-    panier = []; window.majPanierUI(); window.toggleCart();
-};
+window.suppr = async (id) => { if(confirm("Supprimer l'article ?")) await deleteDoc(doc(db, "produits", id)); };
 
 window.adminAccess = () => {
-    if(prompt("Code secret :") === "0000") {
+    if(prompt("Code Admin :") === "0000") {
         isAdmin = !isAdmin;
         document.getElementById('admin-orders-zone').style.display = isAdmin ? 'block' : 'none';
-        if(isAdmin) {
-            onSnapshot(query(collection(db, "commandes"), where("statut", "==", "En attente")), (snap) => {
-                const list = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                document.getElementById('admin-orders-zone').innerHTML = `<h3>📦 Commandes en attente</h3>` + 
-                list.map(c => `<div class="order-card"><b>${c.client}</b> (${c.tel}) - ${c.total}F<br>📍 ${c.adresse}<br><button onclick="window.livrer('${c.id}')">Marquer comme Livré ✅</button></div>`).join('');
-            });
-        }
         window.afficherProduits(produits);
+        if(isAdmin) window.chargerCommandes();
     }
 };
 
-window.maj = async (id, f, v) => await updateDoc(doc(db, "produits", id), { [f]: (f==='stock'?v:parseInt(v)) });
-window.suppr = async (id) => { if(confirm("Supprimer ce produit ?")) await deleteDoc(doc(db, "produits", id)); };
-window.livrer = async (id) => await updateDoc(doc(db, "commandes", id), { statut: "Livré" });
+// SYNC PRODUITS
+onSnapshot(collection(db, "produits"), (snap) => {
+    produits = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    window.afficherProduits(produits);
+});
 
-window.toggleCart = () => document.getElementById('cart-sidebar').classList.toggle('active');
+// FONCTIONS NAVIGATION & AUTH (Rétablies)
 window.toggleAuthModal = () => {
     const m = document.getElementById('auth-modal');
-    m.style.display = (m.style.display==='block'?'none':'block');
+    m.style.display = (m.style.display === 'block') ? 'none' : 'block';
 };
 window.switchAuth = (v) => {
-    document.getElementById('login-view').style.display = v==='login'?'block':'none';
-    document.getElementById('register-view').style.display = v==='register'?'block':'none';
+    document.getElementById('login-view').style.display = v === 'login' ? 'block' : 'none';
+    document.getElementById('register-view').style.display = v === 'register' ? 'block' : 'none';
 };
 window.handleRegister = () => {
-    user = { name: document.getElementById('reg-name').value, phone: document.getElementById('reg-phone').value, address: document.getElementById('reg-address').value, pass: document.getElementById('reg-pass').value };
+    user = { 
+        name: document.getElementById('reg-name').value, 
+        phone: document.getElementById('reg-phone').value, 
+        address: document.getElementById('reg-address').value, 
+        pass: document.getElementById('reg-pass').value 
+    };
     localStorage.setItem('user', JSON.stringify(user));
-    alert("Compte créé, connectez-vous."); window.switchAuth('login');
+    alert("Compte créé !"); window.switchAuth('login');
 };
 window.handleLogin = () => {
     const n = document.getElementById('login-name').value;
@@ -114,9 +93,11 @@ window.handleLogin = () => {
     if(user && user.name === n && user.pass === p) {
         localStorage.setItem('isL', '1');
         location.reload();
-    } else { alert("Erreur d'identifiants"); }
+    } else { alert("Erreur"); }
 };
-window.filter = (c) => window.afficherProduits(c==='all'?produits:produits.filter(p=>p.cat===c));
+
+window.filter = (c) => window.afficherProduits(c === 'all' ? produits : produits.filter(p => p.cat === c));
+window.toggleCart = () => document.getElementById('cart-sidebar').classList.toggle('active');
 
 window.onload = () => {
     if(user && localStorage.getItem('isL')) {
