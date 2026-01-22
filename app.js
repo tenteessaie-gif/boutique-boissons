@@ -92,7 +92,7 @@ window.goToCheckout = async () => {
     await addDoc(collection(db, "commandes"), { 
         client: user.name, tel: user.phone, adresse: user.address, articles: panier, total: total, statut: "En attente", date: new Date() 
     });
-    const numAdmin = "228XXXXXXXX"; // TON NUMÉRO ICI
+    const numAdmin = "22892239333"; // TON NUMÉRO ICI
     const msg = encodeURIComponent(`📦 *NOUVELLE COMMANDE*\n\n*Client:* ${user.name}\n*Tél:* ${user.phone}\n*Lieu:* ${user.address}\n\n*Articles:*\n${listeTexte}\n\n*TOTAL : ${total} F*`);
     window.open(`https://wa.me/${numAdmin}?text=${msg}`, '_blank');
     panier = []; window.majPanierUI(); window.toggleCart();
