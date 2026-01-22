@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DrinkExpress - Boutique</title>
+    <title>DrinkExpress - Grossiste & Détail</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+
     <header>
         <div class="top-bar">
             <div id="user-zone">
@@ -17,49 +19,74 @@
                 </div>
             </div>
             <div class="logo">Drink<span>Express</span></div>
-            <div class="cart-icon" onclick="window.toggleCart()">🛒 <span id="cart-count">0</span></div>
+            <div class="cart-icon" onclick="window.toggleCart()">
+                🛒 <span id="cart-count">0</span>
+            </div>
         </div>
     </header>
 
     <div id="admin-orders-zone" style="display:none;"></div>
+
+    <div class="store-status">
+        <span class="dot"></span> Boutique Ouverte • Atakpamé
+    </div>
+
     <nav class="categories">
         <button class="active" onclick="window.filter('all')">Tous</button>
         <button onclick="window.filter('energy')">Énergisants</button>
         <button onclick="window.filter('soda')">Sucreries</button>
-        <button onclick="window.filter('wine')">Vins</button>
-        <button onclick="window.adminAccess()">⚙️</button>
+        <button onclick="window.filter('wine')">Vins & Spiritueux</button>
+        <button class="btn-admin-nav" onclick="window.adminAccess()">⚙️</button>
     </nav>
 
     <main id="product-grid"></main>
 
-    <div id="auth-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="window.toggleAuthModal()">&times;</span>
-            <div id="login-view">
-                <h2>Connexion</h2>
-                <input type="text" id="login-name" placeholder="Nom de la boutique">
-                <input type="password" id="login-pass" placeholder="Mot de passe">
-                <button class="btn-primary" onclick="window.handleLogin()">Entrer</button>
-                <p onclick="window.switchAuth('register')">Nouveau ? <span>S'inscrire</span></p>
+    <div id="cart-sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Mon Panier</h2>
+            <button class="close-btn" onclick="window.toggleCart()">&times;</button>
+        </div>
+        <div id="cart-items"></div>
+        <div class="cart-footer">
+            <div class="total-box">
+                <span>Total à payer :</span>
+                <span id="cart-total">0</span><span> FCFA</span>
             </div>
-            <div id="register-view" style="display:none;">
-                <h2>Inscription</h2>
-                <input type="text" id="reg-name" placeholder="Nom de votre commerce">
-                <input type="tel" id="reg-phone" placeholder="Numéro de téléphone">
-                <input type="text" id="reg-address" placeholder="Quartier">
-                <input type="password" id="reg-pass" placeholder="Code secret">
-                <button class="btn-primary" onclick="window.handleRegister()">Valider</button>
-                <p onclick="window.switchAuth('login')">Déjà inscrit ? <span>Connexion</span></p>
-            </div>
+            <button class="checkout-btn" onclick="window.goToCheckout()">Confirmer la commande</button>
         </div>
     </div>
 
-    <div id="cart-sidebar" class="sidebar">
-        <div class="sidebar-header"><h2>Mon Panier</h2><button onclick="window.toggleCart()">&times;</button></div>
-        <div id="cart-items"></div>
-        <div class="cart-footer">
-            <div class="total-box">Total : <span id="cart-total">0</span> F</div>
-            <button class="checkout-btn" onclick="window.goToCheckout()">Commander</button>
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="window.toggleAuthModal()">&times;</span>
+            
+            <div id="login-view">
+                <h2>Bon retour !</h2>
+                <p>Connectez-vous pour commander</p>
+                <input type="text" id="login-name" placeholder="Nom de la boutique">
+                <input type="password" id="login-pass" placeholder="Mot de passe (4 chiffres)">
+                <button class="btn-primary" onclick="window.handleLogin()">Se connecter</button>
+                <p class="switch-auth" onclick="window.switchAuth('register')">Nouveau ? <span>Créer un compte</span></p>
+            </div>
+
+            <div id="register-view" style="display:none;">
+                <h2>Créer un compte</h2>
+                <input type="text" id="reg-name" placeholder="Nom ou Boutique">
+                <div class="phone-input">
+                    <select id="reg-prefix">
+                        <option value="+228">🇹🇬 +228</option>
+                        <option value="+229">🇧🇯 +229</option>
+                        <option value="+226">🇧🇫 +226</option>
+                        <option value="+225">🇮🇨 +225</option>
+                    </select>
+                    <input type="tel" id="reg-phone" placeholder="Numéro">
+                </div>
+                <input type="text" id="reg-address" placeholder="Adresse de livraison">
+                <input type="password" id="reg-pass" placeholder="Mot de passe (4 chiffres)">
+                <input type="password" id="reg-pass2" placeholder="Confirmer mot de passe">
+                <button class="btn-primary" onclick="window.handleRegister()">S'inscrire</button>
+                <p class="switch-auth" onclick="window.switchAuth('login')">Déjà inscrit ? <span>Connexion</span></p>
+            </div>
         </div>
     </div>
 
