@@ -209,3 +209,10 @@ window.onload = () => {
         document.getElementById('user-display-name').innerText = user.name;
     }
 };
+
+// Enregistrement du Service Worker pour le mode PWA
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log("Service Worker prêt !"))
+    .catch((err) => console.log("Erreur SW:", err));
+}
