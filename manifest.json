@@ -1,0 +1,21 @@
+{
+  "name": "DrinkExpress - Grossiste & Détail",
+  "short_name": "DrinkExpress",
+  "description": "Boutique de boissons à Atakpamé. Commandes en gros et détail.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2ecc71",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192/2ecc71/ffffff?text=DE",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512/2ecc71/ffffff?text=DrinkExpress",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
