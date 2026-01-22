@@ -1,36 +1,33 @@
-:root { --primary: #2ecc71; --dark: #2c3e50; --bg: #f8fbf9; --white: #ffffff; --danger: #e74c3c; }
+:root { --primary: #2ecc71; --dark: #2c3e50; --bg: #f8fbf9; --danger: #e74c3c; }
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-body { background-color: var(--bg); padding-bottom: 20px; }
+body { background-color: var(--bg); color: var(--dark); padding-bottom: 20px; }
 
-/* Header */
-header { background: var(--white); padding: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-.top-bar { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
-.logo { font-size: 1.5rem; font-weight: 600; color: var(--dark); }
-.logo span { color: var(--primary); }
-.auth-trigger { background: none; border: 1px solid #ddd; padding: 5px 10px; border-radius: 20px; cursor: pointer; }
+header { background: white; padding: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.top-bar { display: flex; justify-content: space-between; align-items: center; }
+.logo span { color: var(--primary); font-weight: bold; }
 
-/* Nav */
-.categories { display: flex; overflow-x: auto; padding: 15px; gap: 10px; scrollbar-width: none; }
-.cat-btn { background: white; border: 1px solid #ddd; padding: 8px 18px; border-radius: 20px; white-space: nowrap; cursor: pointer; transition: 0.3s; }
-.cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.categories { display: flex; overflow-x: auto; padding: 15px; gap: 10px; }
+.categories button { background: white; border: 1px solid #ddd; padding: 8px 18px; border-radius: 20px; white-space: nowrap; }
+.categories button.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-/* Grid */
 #product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; padding: 12px; }
 .product-card { background: white; border-radius: 15px; padding: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-.product-card.oos { border: 1px solid var(--danger); opacity: 0.8; }
 
-/* Prix */
+/* --- ÉTAT ÉPUISÉ EN ROUGE --- */
+.product-card.oos { border: 2px solid var(--danger); opacity: 0.8; }
+.btn-oos { background: var(--danger) !important; cursor: not-allowed; }
+
 .pricing-zone { background: #f9f9f9; padding: 10px; border-radius: 10px; margin: 10px 0; font-size: 0.8rem; }
-.price-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: 600; }
+.price-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
 
-/* Boutons */
-.add-btn { background: var(--primary); color: white; border: none; width: 100%; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; }
-.btn-oos { background-color: var(--danger) !important; }
+/* Footer & Admin */
+.shop-footer { background: var(--dark); color: white; padding: 25px; text-align: center; margin-top: 30px; font-size: 0.85rem; }
+#admin-orders-zone { background: #fff3cd; padding: 15px; border-bottom: 2px solid #ffeeba; }
+.order-card { background: white; padding: 10px; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid var(--primary); text-align: left; }
 
-/* Footer & Sidebar */
-.shop-footer { background: var(--dark); color: white; padding: 20px; text-align: center; margin-top: 30px; font-size: 0.8rem; }
-.sidebar { position: fixed; right: -100%; top: 0; width: 300px; height: 100%; background: white; z-index: 1000; transition: 0.4s; padding: 20px; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
+.sidebar { position: fixed; right: -100%; top: 0; width: 100%; max-width: 350px; height: 100%; background: white; z-index: 1000; transition: 0.4s; padding: 20px; }
 .sidebar.active { right: 0; }
-.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-.modal-content { background: white; margin: 20% auto; padding: 20px; width: 80%; max-width: 350px; border-radius: 15px; text-align: center; }
-input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; }
+.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
+.modal-content { background: white; margin: 15% auto; padding: 25px; border-radius: 15px; width: 90%; max-width: 380px; }
+.btn-primary { background: var(--primary); color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
