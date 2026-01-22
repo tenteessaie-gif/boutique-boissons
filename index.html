@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DrinkExpress - Grossiste & Détail</title>
+    <title>DrinkExpress - Boutique</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-
     <header>
         <div class="top-bar">
             <div id="user-zone">
@@ -19,50 +17,20 @@
                 </div>
             </div>
             <div class="logo">Drink<span>Express</span></div>
-            <div class="cart-icon" onclick="window.toggleCart()">
-                🛒 <span id="cart-count">0</span>
-            </div>
+            <div class="cart-icon" onclick="window.toggleCart()">🛒 <span id="cart-count">0</span></div>
         </div>
     </header>
 
     <div id="admin-orders-zone" style="display:none;"></div>
-
-    <div class="store-status">
-        <span class="dot"></span> Boutique Ouverte • Atakpamé
-    </div>
-
     <nav class="categories">
         <button class="active" onclick="window.filter('all')">Tous</button>
         <button onclick="window.filter('energy')">Énergisants</button>
         <button onclick="window.filter('soda')">Sucreries</button>
         <button onclick="window.filter('wine')">Vins</button>
-        <button class="btn-admin-nav" onclick="window.adminAccess()">⚙️</button>
+        <button onclick="window.adminAccess()">⚙️</button>
     </nav>
 
     <main id="product-grid"></main>
-
-    <footer class="shop-footer">
-        <div class="footer-content">
-            <p>📍 <b>Localisation :</b> Atakpamé, Quartier Administratif</p>
-            <p>📞 <b>WhatsApp :</b> +228 90 00 00 00 / 99 00 00 00</p>
-            <p>🚚 <b>Livraison rapide</b> dans toute la ville</p>
-        </div>
-    </footer>
-
-    <div id="cart-sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <h2>Mon Panier</h2>
-            <button class="close-btn" onclick="window.toggleCart()">&times;</button>
-        </div>
-        <div id="cart-items"></div>
-        <div class="cart-footer">
-            <div class="total-box">
-                <span>Total à payer :</span>
-                <span id="cart-total">0</span><span> FCFA</span>
-            </div>
-            <button class="checkout-btn" onclick="window.goToCheckout()">Confirmer la commande</button>
-        </div>
-    </div>
 
     <div id="auth-modal" class="modal">
         <div class="modal-content">
@@ -72,7 +40,7 @@
                 <input type="text" id="login-name" placeholder="Nom de la boutique">
                 <input type="password" id="login-pass" placeholder="Mot de passe">
                 <button class="btn-primary" onclick="window.handleLogin()">Entrer</button>
-                <p class="switch-auth" onclick="window.switchAuth('register')">Nouveau ? <span>S'inscrire</span></p>
+                <p onclick="window.switchAuth('register')">Nouveau ? <span>S'inscrire</span></p>
             </div>
             <div id="register-view" style="display:none;">
                 <h2>Inscription</h2>
@@ -81,8 +49,17 @@
                 <input type="text" id="reg-address" placeholder="Quartier">
                 <input type="password" id="reg-pass" placeholder="Code secret">
                 <button class="btn-primary" onclick="window.handleRegister()">Valider</button>
-                <p class="switch-auth" onclick="window.switchAuth('login')">Déjà inscrit ? <span>Connexion</span></p>
+                <p onclick="window.switchAuth('login')">Déjà inscrit ? <span>Connexion</span></p>
             </div>
+        </div>
+    </div>
+
+    <div id="cart-sidebar" class="sidebar">
+        <div class="sidebar-header"><h2>Mon Panier</h2><button onclick="window.toggleCart()">&times;</button></div>
+        <div id="cart-items"></div>
+        <div class="cart-footer">
+            <div class="total-box">Total : <span id="cart-total">0</span> F</div>
+            <button class="checkout-btn" onclick="window.goToCheckout()">Commander</button>
         </div>
     </div>
 
