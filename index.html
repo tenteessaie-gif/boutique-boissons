@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DrinkExpress - Boutique</title>
+    <title>DrinkExpress - Grossiste & Détail</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -12,7 +13,7 @@
     <header>
         <div class="top-bar">
             <div id="user-zone">
-                <button id="btn-login-open" class="auth-trigger" onclick="window.toggleAuthModal()">👤 Connexion</button>
+                <button id="btn-login-open" onclick="window.toggleAuthModal()">👤 Connexion</button>
                 <div id="user-welcome" style="display:none;">
                     <span class="user-badge">🏠 <b id="user-display-name"></b></span>
                 </div>
@@ -31,10 +32,10 @@
     </div>
 
     <nav class="categories">
-        <button class="cat-btn active" onclick="window.filter('all')">Tous</button>
-        <button class="cat-btn" onclick="window.filter('energy')">Énergisants</button>
-        <button class="cat-btn" onclick="window.filter('soda')">Sucreries</button>
-        <button class="cat-btn" onclick="window.filter('wine')">Vins</button>
+        <button class="active" onclick="window.filter('all')">Tous</button>
+        <button onclick="window.filter('energy')">Énergisants</button>
+        <button onclick="window.filter('soda')">Sucreries</button>
+        <button onclick="window.filter('wine')">Vins</button>
         <button class="btn-admin-nav" onclick="window.adminAccess()">⚙️</button>
     </nav>
 
@@ -42,8 +43,9 @@
 
     <footer class="shop-footer">
         <div class="footer-content">
-            <p>📍 Atakpamé, Quartier Administratif</p>
-            <p>📞 WhatsApp : +228 90 00 00 00</p>
+            <p>📍 <b>Localisation :</b> Atakpamé, Quartier Administratif</p>
+            <p>📞 <b>WhatsApp :</b> +228 90 00 00 00 / 99 00 00 00</p>
+            <p>🚚 <b>Livraison rapide</b> dans toute la ville</p>
         </div>
     </footer>
 
@@ -54,8 +56,11 @@
         </div>
         <div id="cart-items"></div>
         <div class="cart-footer">
-            <div class="total-box">Total : <span id="cart-total">0</span> FCFA</div>
-            <button class="checkout-btn" onclick="window.goToCheckout()">Commander</button>
+            <div class="total-box">
+                <span>Total à payer :</span>
+                <span id="cart-total">0</span><span> FCFA</span>
+            </div>
+            <button class="checkout-btn" onclick="window.goToCheckout()">Confirmer la commande</button>
         </div>
     </div>
 
@@ -64,19 +69,19 @@
             <span class="close" onclick="window.toggleAuthModal()">&times;</span>
             <div id="login-view">
                 <h2>Connexion</h2>
-                <input type="text" id="login-name" placeholder="Nom">
+                <input type="text" id="login-name" placeholder="Nom de la boutique">
                 <input type="password" id="login-pass" placeholder="Mot de passe">
                 <button class="btn-primary" onclick="window.handleLogin()">Entrer</button>
-                <p onclick="window.switchAuth('register')">S'inscrire</p>
+                <p class="switch-auth" onclick="window.switchAuth('register')">Nouveau ? <span>S'inscrire</span></p>
             </div>
             <div id="register-view" style="display:none;">
                 <h2>Inscription</h2>
-                <input type="text" id="reg-name" placeholder="Boutique">
-                <input type="tel" id="reg-phone" placeholder="WhatsApp">
+                <input type="text" id="reg-name" placeholder="Nom de votre commerce">
+                <input type="tel" id="reg-phone" placeholder="Numéro de téléphone">
                 <input type="text" id="reg-address" placeholder="Quartier">
-                <input type="password" id="reg-pass" placeholder="Pass">
+                <input type="password" id="reg-pass" placeholder="Code secret">
                 <button class="btn-primary" onclick="window.handleRegister()">Valider</button>
-                <p onclick="window.switchAuth('login')">Retour</p>
+                <p class="switch-auth" onclick="window.switchAuth('login')">Déjà inscrit ? <span>Connexion</span></p>
             </div>
         </div>
     </div>
