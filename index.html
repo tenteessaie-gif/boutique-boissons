@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-
     <header>
         <div class="top-bar">
             <div id="user-zone">
@@ -24,7 +23,7 @@
         </div>
     </header>
 
-    <div id="admin-orders-zone" style="display:none;"></div>
+    <div id="admin-orders-zone" style="display:none; background:#fff3cd; padding:15px; border-bottom:2px solid #ffeeba;"></div>
 
     <div class="store-status">
         <span class="dot"></span> Boutique Ouverte • Atakpamé
@@ -35,7 +34,7 @@
         <button onclick="window.filter('energy')">Énergisants</button>
         <button onclick="window.filter('soda')">Sucreries</button>
         <button onclick="window.filter('wine')">Vins & Spiritueux</button>
-        <button onclick="window.adminAccess()" style="background:none; border:none; cursor:pointer; font-size:1.2rem;">⚙️</button>
+        <button class="btn-admin-nav" onclick="window.adminAccess()">⚙️</button>
     </nav>
 
     <main id="product-grid"></main>
@@ -48,7 +47,7 @@
         <div id="cart-items"></div>
         <div class="cart-footer">
             <div class="total-box">
-                <span>Total :</span>
+                <span>Total à payer :</span>
                 <span id="cart-total">0</span><span> FCFA</span>
             </div>
             <button class="checkout-btn" onclick="window.goToCheckout()">Confirmer la commande</button>
@@ -58,31 +57,24 @@
     <div id="auth-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="window.toggleAuthModal()">&times;</span>
-            
             <div id="login-view">
                 <h2>Bon retour !</h2>
                 <input type="text" id="login-name" placeholder="Nom de la boutique">
-                <input type="password" id="login-pass" placeholder="Code secret">
+                <input type="password" id="login-pass" placeholder="Mot de passe (4 chiffres)">
                 <button class="btn-primary" onclick="window.handleLogin()">Se connecter</button>
                 <p class="switch-auth" onclick="window.switchAuth('register')">Nouveau ? <span>Créer un compte</span></p>
             </div>
-
             <div id="register-view" style="display:none;">
-                <h2>Inscription</h2>
-                <input type="text" id="reg-name" placeholder="Nom du commerce">
-                <div class="phone-input" style="display:flex; gap:5px;">
-                    <select id="reg-prefix" style="width:100px;">
-                        <option value="+228">🇹🇬 +228</option>
-                        <option value="+229">🇧🇯 +229</option>
-                        <option value="+226">🇧🇫 +226</option>
-                        <option value="+225">🇮🇨 +225</option>
-                    </select>
+                <h2>Créer un compte</h2>
+                <input type="text" id="reg-name" placeholder="Nom ou Boutique">
+                <div class="phone-input" style="display:flex; gap:8px;">
+                    <select id="reg-prefix" style="width:40%"><option value="+228">🇹🇬 +228</option><option value="+229">🇧🇯 +229</option><option value="+226">🇧🇫 +226</option><option value="+225">🇮🇨 +225</option></select>
                     <input type="tel" id="reg-phone" placeholder="Numéro">
                 </div>
-                <input type="text" id="reg-address" placeholder="Quartier / Ville">
-                <input type="password" id="reg-pass" placeholder="Code (4 chiffres)">
-                <button class="btn-primary" onclick="window.handleRegister()">Valider l'inscription</button>
-                <p class="switch-auth" onclick="window.switchAuth('login')">Retour à la connexion</p>
+                <input type="text" id="reg-address" placeholder="Adresse de livraison">
+                <input type="password" id="reg-pass" placeholder="Mot de passe">
+                <button class="btn-primary" onclick="window.handleRegister()">S'inscrire</button>
+                <p class="switch-auth" onclick="window.switchAuth('login')">Retour</p>
             </div>
         </div>
     </div>
