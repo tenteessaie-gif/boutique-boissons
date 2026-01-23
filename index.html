@@ -20,13 +20,14 @@
 
         <div class="header-right">
             <div id="auth-section">
-                <div id="user-welcome" style="display:none; font-size: 0.85rem; font-weight: 600;">
-                    👤 <span id="user-display-name"></span>
-                </div>
-                <button id="btn-login-open" onclick="window.toggleAuthModal()" style="background:none; border:none; color: var(--accent); font-weight: 600; cursor:pointer; font-size: 0.85rem;">
-                    Se connecter
-                </button>
-            </div>
+    <div id="user-welcome" style="display:none; align-items: center; gap: 8px;">
+        👤<span id="user-display-name" style="font-size: 0.85rem; font-weight: 600;"></span>
+        <button onclick="window.handleLogout()" style="background:none; border:none; color:var(--danger); font-size: 0.75rem; cursor:pointer; text-decoration:underline; padding:0;">Quitter</button>
+    </div>
+    <button id="btn-login-open" onclick="window.toggleAuthModal()" style="background:none; border:none; color: var(--accent); font-weight: 600; cursor:pointer; font-size: 0.85rem;">
+        Se connecter
+    </button>
+</div>
 
             <div class="cart-icon" onclick="window.toggleCart()" style="cursor:pointer; position:relative; font-size: 1.2rem;">
                 🛒 <span id="cart-count" style="position:absolute; top:-8px; right:-10px; background:red; color:white; border-radius:50%; padding:2px 6px; font-size:0.7rem;">0</span>
