@@ -114,7 +114,13 @@ window.handleLogin = () => {
     if(user && n === user.name && p === user.pass) { localStorage.setItem('isL', '1'); location.reload(); }
     else { alert("Erreur !"); }
 };
-
+window.handleLogout = () => {
+    if(confirm("Voulez-vous vous déconnecter ?")) {
+        localStorage.removeItem('isL');
+        // On ne supprime pas 'user' pour que ses infos reviennent vite s'il veut se reconnecter
+        location.reload(); 
+    }
+};
 window.updProd = async (id, f, v) => { await updateDoc(doc(db, "produits", id), { [f]: (f==='stock'? v : parseInt(v)) }); };
 window.filter = (c) => window.afficherProduits(c === 'all' ? produits : produits.filter(p => p.cat === c));
 window.toggleCart = () => document.getElementById('cart-sidebar').classList.toggle('active');
