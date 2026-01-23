@@ -43,8 +43,22 @@ header { background: var(--white); padding: 15px; position: sticky; top: 0; z-in
 .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #fff; margin-bottom: 8px; border-radius: 10px; border-left: 4px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
 /* FOOTER SOMBRE */
-.shop-footer { background: #1a252f; padding: 25px; text-align: center; color: #ecf0f1; border-top: 4px solid var(--primary); }
-.sidebar { position: fixed; right: -100%; top: 0; width: 100%; max-width: 350px; height: 100%; background: white; z-index: 1000; transition: 0.4s; padding: 25px; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
-.sidebar.active { right: 0; }
-.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
-.modal-content { background: white; margin: 10% auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; }
+.shop-footer {
+    background: #1a252f;
+    padding: 15px; /* Réduit l'espace interne */
+    text-align: center;
+    color: #ecf0f1;
+    border-top: 4px solid var(--primary);
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column; /* Met les lignes l'une sous l'autre */
+    gap: 4px; /* Espace très réduit entre l'adresse et le téléphone */
+    font-size: 0.8rem; /* Taille de texte réduite */
+}
+
+.footer-line {
+    display: block;
+    opacity: 0.9;
+}
