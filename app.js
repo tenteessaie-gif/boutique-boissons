@@ -84,7 +84,7 @@ window.goToCheckout = async () => {
     const total = document.getElementById('cart-total').innerText;
     const liste = panier.map(i => `- ${i.qty}x ${i.nom}`).join('\n');
     const numAdmin = "22892239333"; // REMPLACE PAR TON NUMÉRO
-    const msg = encodeURIComponent(`📦 *COMMANDE DRINKEXPRESS*\n\n*Client:* ${user.name}\n*Lieu:* ${user.address}\n*Tél:* ${user.phone}\n\n*Articles:*\n${liste}\n\n*TOTAL: ${total} F*`);
+    const msg = encodeURIComponent(`📦 *NOUVELLE COMMANDE*\n\n*Client:* ${user.name}\n*Lieu:* ${user.address}\n*Tél:* ${user.phone}\n\n*Articles:*\n${liste}\n\n*TOTAL: ${total} F*`);
     window.open(`https://wa.me/${numAdmin}?text=${msg}`, '_blank');
     panier = []; window.majPanierUI(); window.toggleCart();
 };
