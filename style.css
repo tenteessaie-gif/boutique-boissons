@@ -1,4 +1,4 @@
-/* --- 1. CONFIGURATION DES COULEURS --- */
+/* --- CONFIGURATION GÉNÉRALE --- */
 :root { 
     --primary: #2ecc71; 
     --dark: #2c3e50; 
@@ -8,7 +8,6 @@
     --accent: #3498db; 
 }
 
-/* --- 2. RÉGLAGES GÉNÉRAUX --- */
 * { 
     margin: 0; 
     padding: 0; 
@@ -23,16 +22,65 @@ body {
     overflow-x: hidden;
 }
 
+/* --- EN-TÊTE (HEADER) RESTAURÉ --- */
 header { 
     background: var(--white); 
-    padding: 15px; 
+    padding: 12px 15px; 
     position: sticky; 
     top: 0; 
-    z-index: 100; 
-    box-shadow: 0 2px 15px rgba(0,0,0,0.05); 
+    z-index: 1000; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
 }
 
-/* --- 3. CATÉGORIES (STYLE BOUTON MODERNE) --- */
+.top-bar { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+}
+
+/* Gauche : Maison + DrinkExpress */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* Droite : Nom/Login + Panier + Admin */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px; 
+}
+
+#auth-section {
+    display: flex;
+    align-items: center;
+}
+
+#btn-login-open {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+#user-display-name {
+    color: var(--dark);
+    font-weight: 600;
+    font-size: 0.85rem;
+    max-width: 90px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- CATÉGORIES (DESIGN BULLES MODERNES) --- */
 .categories { 
     display: flex; 
     overflow-x: auto; 
@@ -40,13 +88,14 @@ header {
     gap: 10px; 
     scrollbar-width: none; 
 }
+
 .categories::-webkit-scrollbar { display: none; }
 
 .categories button { 
     background: #ebedef; 
     border: none; 
-    padding: 10px 20px; 
-    border-radius: 10px; 
+    padding: 10px 18px; 
+    border-radius: 12px; 
     white-space: nowrap; 
     font-size: 0.85rem; 
     font-weight: 600; 
@@ -58,10 +107,9 @@ header {
 .categories button.active { 
     background: var(--primary); 
     color: white; 
-    box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3); 
 }
 
-/* --- 4. GRILLE ET CARTES PRODUITS (BORDURE BLEUE) --- */
+/* --- GRILLE ET CARTES PRODUITS (BORDURE BLEUE) --- */
 #product-grid { 
     display: grid; 
     grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); 
@@ -74,12 +122,13 @@ header {
     border-radius: 15px; 
     padding: 12px; 
     text-align: center; 
-    border: 2.5px solid var(--accent); /* Ton entourage bleu */
+    border: 2.5px solid var(--accent); 
     transition: 0.3s; 
 }
 
 .product-card.oos { border-color: var(--danger); opacity: 0.7; }
-.product-img { font-size: 35px; margin-bottom: 5px; display: block; }
+
+.product-img { font-size: 35px; display: block; margin-bottom: 5px; }
 
 .pricing-zone { 
     background: #f9f9f9; 
@@ -89,6 +138,9 @@ header {
     font-size: 0.75rem; 
     text-align: left; 
 }
+
+.price-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.price-val { font-weight: 600; color: var(--primary); }
 
 .add-btn { 
     background: var(--primary); 
@@ -101,7 +153,7 @@ header {
     cursor: pointer; 
 }
 
-/* --- 5. PANIER LATÉRAL (CORRECTION BUG POSITION) --- */
+/* --- PANIER LATÉRAL (CORRECTION BUG AFFICHAGE) --- */
 .sidebar { 
     position: fixed; 
     right: -100%; 
@@ -110,7 +162,7 @@ header {
     max-width: 350px; 
     height: 100%; 
     background: white; 
-    z-index: 1000; 
+    z-index: 2000; 
     transition: 0.4s ease; 
     padding: 25px; 
     box-shadow: -5px 0 15px rgba(0,0,0,0.1); 
@@ -118,21 +170,22 @@ header {
 
 .sidebar.active { right: 0; }
 
-/* --- 6. MODAL CONNEXION (CORRECTION BUG POSITION) --- */
+/* --- MODALS (CONNEXION/INSCRIPTION - CORRECTION BUG) --- */
 .modal { 
     display: none; 
     position: fixed; 
-    z-index: 2000; 
+    z-index: 3000; 
     left: 0; 
     top: 0; 
     width: 100%; 
     height: 100%; 
-    background: rgba(0,0,0,0.85); 
+    background: rgba(0,0,0,0.8); 
+    backdrop-filter: blur(4px);
 }
 
 .modal-content { 
     background: white; 
-    margin: 10% auto; 
+    margin: 15% auto; 
     padding: 25px; 
     border-radius: 20px; 
     width: 90%; 
@@ -140,16 +193,11 @@ header {
 }
 
 .modal-content input, .modal-content select {
-    width: 100%; 
-    padding: 12px; 
-    margin: 8px 0; 
-    border-radius: 10px;
-    border: 2px solid #ebedef; 
-    background: #f9f9f9; 
-    font-size: 0.9rem;
+    width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px;
+    border: 2px solid #ebedef; background: #f9f9f9; font-size: 0.9rem;
 }
 
-/* --- 7. FOOTER (ADRESSE + WHATSAPP) --- */
+/* --- FOOTER COMPACT --- */
 .shop-footer {
     background: #1a252f;
     padding: 20px 10px;
@@ -162,8 +210,11 @@ header {
 .footer-content {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 5px;
 }
 
 .footer-content span { font-size: 0.8rem; }
+
+/* --- UTILS --- */
+.qty-badge { background: var(--primary); color: white; padding: 2px 6px; border-radius: 5px; font-weight: bold; margin-right: 8px; }
+.cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #fff; margin-bottom: 8px; border-radius: 10px; border-left: 4px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
