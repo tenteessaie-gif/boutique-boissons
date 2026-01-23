@@ -79,7 +79,12 @@ header {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
+#user-welcome {
+    display: flex;
+    flex-direction: column; /* Le bouton Quitter sera juste sous le nom */
+    align-items: flex-end; /* Aligné à droite sous le nom */
+    line-height: 1.1;
+}
 /* --- CATÉGORIES (DESIGN BULLES MODERNES) --- */
 .categories { 
     display: flex; 
