@@ -12,18 +12,26 @@
 
     <header>
     <div class="top-bar">
-        <div class="logo">
-            <span style="color: #2c3e50; font-size: 0.9rem; font-weight: normal;">🏠 GSM Juswell</span>
-            <span style="margin-left: 15px; font-size: 1.2rem; font-weight: 600;">Drink<span style="color: #2ecc71;">Express</span></span>
-        </div>
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <div id="user-welcome" style="display:none; font-size: 0.8rem; font-weight: 600;">
-                👤 <span id="user-display-name"></span>
+        <div class="header-left">
+            <div class="logo">
+                <span style="font-size: 1.2rem;">🏠 Drink<span style="color: var(--primary);">Express</span></span>
             </div>
-            <button id="btn-login-open" onclick="window.toggleAuthModal()" style="background:none; border:none; font-size: 1.2rem; cursor:pointer;">🔑</button>
-            <div class="cart-icon" onclick="window.toggleCart()" style="cursor:pointer; position:relative;">
+        </div>
+
+        <div class="header-right">
+            <div id="auth-section">
+                <div id="user-welcome" style="display:none; font-size: 0.85rem; font-weight: 600;">
+                    👤 <span id="user-display-name"></span>
+                </div>
+                <button id="btn-login-open" onclick="window.toggleAuthModal()" style="background:none; border:none; color: var(--accent); font-weight: 600; cursor:pointer; font-size: 0.85rem;">
+                    Se connecter
+                </button>
+            </div>
+
+            <div class="cart-icon" onclick="window.toggleCart()" style="cursor:pointer; position:relative; font-size: 1.2rem;">
                 🛒 <span id="cart-count" style="position:absolute; top:-8px; right:-10px; background:red; color:white; border-radius:50%; padding:2px 6px; font-size:0.7rem;">0</span>
             </div>
+
             <button onclick="window.adminAccess()" style="background:none; border:none; filter: grayscale(1); font-size: 1.1rem; cursor:pointer;">⚙️</button>
         </div>
     </div>
